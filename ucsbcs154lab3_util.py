@@ -1,3 +1,8 @@
+# ucsbcs154lab3
+# All Rights Reserved
+# Copyright (c) 2023 Regents of the University of California
+# Distribution Prohibited
+
 import pyrtl
 import numpy as np
 import struct
@@ -7,7 +12,7 @@ import math
 # ==== Pyrtl functions ==== #
 
 # counts the number of wires that come before the first 1
-def count_zeroes_from_end(x, start='msb'):
+def count_zeros_from_end(x, start='msb'):
     if start not in ('msb', 'lsb'):
         raise pyrtl.PyrtlError('Invalid start parameter')
 

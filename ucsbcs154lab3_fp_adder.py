@@ -1,5 +1,10 @@
+# ucsbcs154lab3
+# All Rights Reserved
+# Copyright (c) 2023 Regents of the University of California
+# Distribution Prohibited
+
 import pyrtl
-import util
+import ucsbcs154lab3_util as util
 
 # Inputs
 a = pyrtl.Input(bitwidth=16, name='A')
@@ -8,7 +13,7 @@ b = pyrtl.Input(bitwidth=16, name='B')
 # Outputs
 c = pyrtl.Output(bitwidth=16, name='C')
 
-'''   Declare all necessary Registers and WireVectors   '''
+# ---   Declare all necessary Registers and WireVectors   ---
 
 # Hint 1: You will want to split inputs into useful components
 
@@ -20,7 +25,7 @@ c = pyrtl.Output(bitwidth=16, name='C')
 # Additional regs/wires ...
 
 
-'''       End of Register/WireVector declarations       '''
+# ---       End of Register/WireVector declarations       ---
 
 # Step 1: Split up inputs A and B into useful components
 
@@ -89,14 +94,15 @@ for i in range(len(a_inputs)):
 
 
 # Run simulation using specified inputs
+# Note: The design must be a 2-stage pipeline.
+#       So it should receive new input every cycle.
 sim_trace = pyrtl.SimulationTrace()
 sim = pyrtl.Simulation(tracer=sim_trace)
 for i in range(len(a_inputs)):
-  for j in range(2):
-    sim.step({
-      'A':int(util.float_to_ieee_hp(a_inputs[i]), base=2),
-      'B':int(util.float_to_ieee_hp(b_inputs[i]), base=2),
-    })
+  sim.step({
+    'A':int(util.float_to_ieee_hp(a_inputs[i]), base=2),
+    'B':int(util.float_to_ieee_hp(b_inputs[i]), base=2),
+  })
 
 
 
@@ -108,26 +114,26 @@ sim_trace.render_trace()
 # Verify results against expected results
 passed = True
 num_tests_ran = 0
-for i in range(len(expected_results)):
+for i in range(1, len(a_inputs)):
   # if input or expected result is invalid
-  if util.not_tested(expected_results[i]):
-    print(" {} will not be tested. Skipping test...".format(expected_results[i]))
+  if util.not_tested(expected_results[i - 1]):
+    print(" {} will not be tested. Skipping test...".format(expected_results[i - 1]))
     continue
-  if util.not_tested(a_inputs[i]):
-    print(" {} will not be tested. Skipping test...".format(a_inputs[i]))
+  if util.not_tested(a_inputs[i - 1]):
+    print(" {} will not be tested. Skipping test...".format(a_inputs[i - 1]))
     continue
-  if util.not_tested(b_inputs[i]):
-    print(" {} will not be tested. Skipping test...".format(b_inputs[i]))
+  if util.not_tested(b_inputs[i - 1]):
+    print(" {} will not be tested. Skipping test...".format(b_inputs[i - 1]))
     continue
   # if output matched expected result
-  if util.float_to_ieee_hp(expected_results[i]) == bin(sim_trace.trace['C'][i*2 + 1])[2:].zfill(16):
-    print("Passed case:", util.float_to_ieee_hp(a_inputs[i]), "+", util.float_to_ieee_hp(b_inputs[i]), "=", util.float_to_ieee_hp(expected_results[i]))
+  if util.float_to_ieee_hp(expected_results[i - 1]) == bin(sim_trace.trace['C'][i])[2:].zfill(16):
+    print("Passed case:", util.float_to_ieee_hp(a_inputs[i - 1]), "+", util.float_to_ieee_hp(b_inputs[i - 1]), "=", util.float_to_ieee_hp(expected_results[i - 1]))
     pass
   else:
     passed = False
-    print("Failed case:", util.float_to_ieee_hp(a_inputs[i]), "+", util.float_to_ieee_hp(b_inputs[i]))
-    print(" expected :", util.float_to_ieee_hp(expected_results[i]))
-    print(" actual   :", bin(sim_trace.trace['C'][i*2 + 1])[2:].zfill(16))
+    print("Failed case:", util.float_to_ieee_hp(a_inputs[i - 1]), "+", util.float_to_ieee_hp(b_inputs[i - 1]))
+    print(" expected :", util.float_to_ieee_hp(expected_results[i - 1]))
+    print(" actual   :", bin(sim_trace.trace['C'][i])[2:].zfill(16))
     print()
   num_tests_ran += 1
 
